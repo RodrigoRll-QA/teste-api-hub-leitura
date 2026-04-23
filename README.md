@@ -1,9 +1,10 @@
 # Automação de Testes de API - Hub de Leitura 📚
 
-![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![EBAC](https://img.shields.io/badge/EBAC-QA_Automation-blue?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
+![QA](https://img.shields.io/badge/Status-Estudo_QA-green?style=flat-square)
+![EBAC](https://img.shields.io/badge/Origin-EBAC_Automation-blue?style=flat-square)
+![Postman](https://img.shields.io/badge/Tools-Postman-FF6C37?style=flat-square&logo=postman&logoColor=white)
+![JavaScript](https://img.shields.io/badge/Language-JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Node](https://img.shields.io/badge/Runtime-Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
 
 Este repositório contém a automação de testes de API desenvolvida para o projeto Hub de Leitura. O objetivo é validar o ciclo de vida completo de um livro no sistema (CRUD).
 
@@ -24,5 +25,6 @@ Este repositório contém a automação de testes de API desenvolvida para o pro
 3. Certifique-se de que o ambiente (Environment) está selecionado.
 4. Utilize o **Collection Runner** para executar todos os testes em sequência.
 
-## 🛡️ Licença
-Este projeto está sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+---
+**Autor:** [Rodrigo Lins] 
+*Analista de QA em transição de carreira | EBAC
