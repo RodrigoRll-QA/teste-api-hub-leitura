@@ -1,0 +1,40 @@
+{
+	"id": "25e32646-de07-452f-80bb-91f2f85e624a",
+	"name": "Ambiente local hub de leitura",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "ultimo_isbn_gerado",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "ultima_categoria",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "ultimo_id_criado",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		}
+	],
+	"color": null,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2026-04-23T23:17:55.522Z",
+	"_postman_exported_using": "Postman/12.7.5"
+}

@@ -1,0 +1,490 @@
+{
+  "info": {
+    "_postman_id": "8d8f1e22-a15c-4276-a04a-76574a2fe852",
+    "name": "hub-de-leitura-api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54263782",
+    "_collection_link": "https://go.postman.co/collection/54263782-8d8f1e22-a15c-4276-a04a-76574a2fe852?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Autenticação",
+      "item": [
+        {
+          "name": "Login admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {\r",
+                  "    let res = pm.response.json();\r",
+                  "    let tokenLimpo = res.token;\r",
+                  "\r",
+                  "    if (tokenLimpo.startsWith(\"Bearer \")) {\r",
+                  "        tokenLimpo = tokenLimpo.replace(\"Bearer \", \"\").trim();\r",
+                  "    }\r",
+                  "\r",
+                  "    pm.environment.set(\"token\", tokenLimpo);\r",
+                  "    console.log(\"✅ Token limpo e salvo!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"admin@biblioteca.com\",\r\n  \"password\": \"admin123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catálogo de livros",
+      "item": [
+        {
+          "name": "Listar livros",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status é 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Validar se a lista de livros existe\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    var lista = Array.isArray(jsonData) ? jsonData : jsonData.books;\r",
+                  "    \r",
+                  "    pm.expect(lista).to.be.an('array');\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar livros - Filtros e Paginação",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status é 200 - Busca realizada\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Validar limite de paginação\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    var livros = Array.isArray(jsonData) ? jsonData : jsonData.books;\r",
+                  "\r",
+                  "    pm.expect(livros.length).to.be.at.most(10);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books?search=Rodrigo&limit=10&orderBy=title&order=ASC",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Rodrigo",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "type": "text"
+                },
+                {
+                  "key": "orderBy",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "order",
+                  "value": "ASC",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cadastrar livros",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status deve ser 201\", () => {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "var res = pm.response.json();\r",
+                  "var book = res.book || res;\r",
+                  "\r",
+                  "if (book && book.id) {\r",
+                  "    \r",
+                  "    pm.environment.set(\"ultimo_id_criado\", book.id);\r",
+                  "    pm.environment.set(\"ultimo_isbn_gerado\", book.isbn);\r",
+                  "    pm.environment.set(\"ultima_categoria\", book.category);\r",
+                  "\r",
+                  "    console.log(\"✅ ID capturado: \" + book.id);\r",
+                  "    console.log(\"✅ ISBN capturado: \" + book.isbn);\r",
+                  "} else {\r",
+                  "    console.log(\"❌ Erro: A resposta da API não contém um objeto 'book' válido.\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Manual do QA {{$randomAdjective}}\",\r\n  \"author\": \"Rodrigo Lins Lopes\",\r\n  \"description\": \"Testando a organização\",\r\n  \"category\": \"Tecnologia\",\r\n  \"isbn\": \"{{$randomInt}}\",\r\n  \"editor\": \"Editora EBAC\",\r\n  \"language\": \"Português\",\r\n  \"publication_year\": 2026,\r\n  \"pages\": 300,\r\n  \"format\": \"Físico\",\r\n  \"total_copies\": 10,\r\n  \"available_copies\": 10\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar livro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Livro editado com sucesso\", function () {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Rodrigo e o QA\",\r\n  \"author\": \"Rodrigo Lins Lopes\",\r\n  \"description\": \"Uma história do início da jornada em QA\",\r\n  \"category\": \"Tecnologia\",\r\n  \"isbn\": \"{{ultimo_isbn_gerado}}\",\r\n  \"editor\": \"Editora EBAC\",\r\n  \"language\": \"Português\",\r\n  \"publication_year\": 2026,\r\n  \"pages\": 300,\r\n  \"format\": \"Físico\",\r\n  \"total_copies\": 10,\r\n  \"available_copies\": 10\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{ultimo_id_criado}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{ultimo_id_criado}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir livro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Livro excluído com sucesso\", () => {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+                  "});\r",
+                  "\r",
+                  "pm.environment.unset(\"33\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{ultimo_id_criado}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{ultimo_id_criado}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cenários negativos",
+      "item": [
+        {
+          "name": "Livro inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status esperado é 404 (Não encontrado)\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/books/8888",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "8888"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Criar livro sem nenhum titulo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status esperado é 400 (Erro de validação)\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"author\": \"Rodrigo Lins\",\r\n  \"description\": \"Tentando criar sem título\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          "if (!pm.environment.get(\"token\")) {\r",
+          "    console.log(\"Token não encontrado. Iniciando login automático...\");\r",
+          "\r",
+          "    const loginRequest = {\r",
+          "        url: pm.environment.get(\"baseUrl\") + '/api/login',\r",
+          "        method: 'POST',\r",
+          "        header: { 'Content-Type': 'application/json' },\r",
+          "        body: {\r",
+          "            mode: 'raw',\r",
+          "            raw: JSON.stringify({\r",
+          "                email: \"admin@biblioteca.com\",\r",
+          "                password: \"admin123\"\r",
+          "            })\r",
+          "        }\r",
+          "    };\r",
+          "\r",
+          "    pm.sendRequest(loginRequest, (err, res) => {\r",
+          "        if (!err && res.code === 200) {\r",
+          "            const novoToken = res.json().token;\r",
+          "            const tokenLimpo = novoToken.replace(\"Bearer \", \"\").trim();\r",
+          "            pm.environment.set(\"token\", tokenLimpo);\r",
+          "            console.log(\"✅ Automação: Token gerado e salvo com sucesso!\");\r",
+          "        } else {\r",
+          "            console.log(\"❌ Erro na automação de login: \" + res.status);\r",
+          "        }\r",
+          "    });\r",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
